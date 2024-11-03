@@ -23,9 +23,9 @@ def three_touch_backtest(data: pd.DataFrame, parameters: dict):
         signal_info = {
             "date": data['Date'].iloc[i],
             "signal": "No Signal",
-            "entry": None,
-            "take_profit": None,
-            "stop_loss": None
+            "entry": "No Entry",
+            "take_profit": "No Take Profit",
+            "stop_loss": "No Stop Loss",
         }
 
         # Détection des signaux de vente ou d'achat
