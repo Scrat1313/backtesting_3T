@@ -1,14 +1,14 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, File, UploadFile, Form
 import pandas as pd
 from backtesting.backtester import perform_backtest
 from starlette.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 app = FastAPI()
 
 # Configuration CORS pour autoriser les requêtes depuis le frontend
 origins = [
-    "http://localhost:3000",  # L'adresse de votre frontend Next.js
+    "http://localhost:3000",  # L'adresse de votre frontend react.js
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -18,18 +18,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Classe pour représenter une requête de backtest
-class BacktestRequest(BaseModel):
-    strategy: str
-    data_file: str
-    parameters: dict
-
 @app.post("/backtest/")
-async def backtest(request: BacktestRequest):
-    # Charger les données historiques
-    data = pd.read_csv(request.data_file)
+async def backtest(
+    strategy: str = Form(...),
+    data_file: UploadFile = File(...),
+    parameters: str = Form(...)  # Accepte parameters comme une chaîne JSON
+):
+    # Convertir les paramètres de chaîne JSON en dictionnaire
+    import json
+    parameters_dict = json.loads(parameters)
+
+    # Charger les données historiques à partir du fichier téléchargé
+    contents = await data_file.read()
+    data = pd.read_csv(pd.io.common.BytesIO(contents))
 
     # Appel de la fonction de backtesting
-    results = perform_backtest(data, request.strategy, request.parameters)
+    results = perform_backtest(data, strategy, parameters_dict)
 
     return results
