@@ -27,7 +27,8 @@ def three_touch_backtest(data: pd.DataFrame, parameters: dict):
             "signal": "No Signal",
             "entry": "No Entry",
             "take_profit": "No TP",
-            "stop_loss": "No SL"
+            "stop_loss": "No SL",
+            "is_winning_trade": False,  # Ajout d'une indication de trade gagnant
         }
 
         # Détection des signaux de vente ou d'achat
@@ -41,6 +42,7 @@ def three_touch_backtest(data: pd.DataFrame, parameters: dict):
             # Vérifier si le TP a été atteint (indicateur d'un trade gagnant)
             if data['Price'].iloc[i:].min() <= signal_info["take_profit"]:
                 winning_trades += 1
+                signal_info["is_winning_trade"] = True  # Indique que le trade a été gagnant
 
         elif data['Price'].iloc[i] <= data['Price'].rolling(window=3).min().iloc[i]:
             signal_info["signal"] = "Buy Signal"
@@ -52,6 +54,7 @@ def three_touch_backtest(data: pd.DataFrame, parameters: dict):
             # Vérifier si le TP a été atteint (indicateur d'un trade gagnant)
             if data['Price'].iloc[i:].max() >= signal_info["take_profit"]:
                 winning_trades += 1
+                signal_info["is_winning_trade"] = True  # Indique que le trade a été gagnant
 
         signals.append(signal_info)
 
