@@ -7,8 +7,6 @@ import {
   PlayCircle,
   AlertCircle,
   BarChart2,
-  ArrowUpCircle,
-  ArrowDownCircle,
   Loader2,
   CheckCircle,
   XCircle
